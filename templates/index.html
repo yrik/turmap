@@ -153,69 +153,12 @@
         </style>
     </head>
     <body>
-    	<div id="top"></div>
+       	<div id="top"></div>
 		<div id="container">
-		<h1><a href="/">Нектар - Продать Мёд, Купить Мёд. Продать и купить мёд, пергу,<br/> маточное молочко, воск, пыльцу. Доска обьявлений для пчеловодов. </a></h1>
+		<h1><a href="/">Поиск жилья для отдыха, на карте: Буковель,Крым.. </a></h1>
 		{% block content %}
-        <table class="table_null">
-            <tr>
-                <td>
-                    {% for item in buy.object_list %}
-                 <div>
-                        <p>{{ item.content }}</p>
-                        <p class="ad_date">{{ item.date|date:"d/m/y"|lower }}</p>
-                        <p class="ad_contacts">
-                        	{% if item.name %}
-                            	{{ item.name }},
-							{% endif %}
-							
-							 {{ item.phone }}
-							 
-							 {% if item.email %},
-							  <a href="mailto:{{ item.email }}">{{ item.email }}</a>
-							  {% endif %}
-                        </p>
-
-                    </div><hr/>
-                    {% endfor %} 
-					<br/><a href="/buy/2">больше обьявлений о покупке</a>
-                </td>
-                <td>
-                    <form method="post" action="" class="iform">
-
-                        {{ formset.management_form }}
-                        {% for field in formset %}
-                        <div>{{ field.label_tag }} {{ field }} {{ field.errors }}</div>
-                        {% endfor %}
-						<input type="submit" value="Сохранить"/>
-                    </form>
-                </td>
-                <td>
-                    {% for item in sell.object_list %}
-                    <div>
-                        <p>{{ item.content }}</p>
-                        <p class="ad_date">{{ item.date|date:"d/m/y"|lower }}</p>
-                        <p class="ad_contacts">
-                        	{% if item.name %}
-                            	{{ item.name }},
-							{% endif %}
-							
-							 {{ item.phone }}
-							 
-							 {% if item.email %},
-							  <a href="mailto:{{ item.email }}">{{ item.email }}</a>
-							  {% endif %}
-                        </p>
-
-                    </div><hr/>
-                    {% endfor %}
-					
-					<br/><a href="/sell/1">больше обьявлений о продаже</a>
-                </td>
-            </tr>
-        </table>
-        {% endblock %}
-<br/>
+     {{ form.map }}
+    {{ form.media.js }}
 <div class="tag-cloud">{% load tagging_tags %}{% tag_cloud_for_model ad.Ad as tags with steps=6 distribution=log %}
 {% for tag in tags %}
 <span class="tag-{{tag.font_size|add:"2"}}"><a href="/tag/{{tag.name}}/">{{tag.name}}</a></span> 
@@ -223,27 +166,14 @@
 		<div id="footer-spacer"></div>   
 	</div>
 	<div id="footer">
-		<ul>
-	<li><a href="http://nectar.org.ua"><img style="border:none;" src="http://nectar.org.ua/static/logo.gif" alt="Нектар. Пчеловодческие обьявления. Мед. Инвентарь. Другое." /></a></li>		
-	<li>
+<li>
     &copy 2010 <a href="http://yrik.org.ua">yrik.org.ua</a> &nbsp
 	</li>
 	<li>
-	e-mail:admin(at)nectar.org.ua
-	</li>
-	<li>
-	<a href="/links">Наши друзья (каталог сайтов)</a>
+	e-mail:admin(at)turmap.info
 	</li>
 	</ul>
-	
-	<!-- Yandex.Metrika -->
-<script src="//mc.yandex.ru/metrika/watch.js" type="text/javascript"></script>
-<div style="display:none;"><script type="text/javascript">
-try { var yaCounter1497355 = new Ya.Metrika(1497355); } catch(e){}
-</script></div>
-<noscript><div style="position:absolute"><img src="//mc.yandex.ru/watch/1497355" alt="" /></div></noscript>
-<!-- /Yandex.Metrika -->
-	
+
 	</div>
 
     </body>

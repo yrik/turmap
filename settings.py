@@ -24,6 +24,7 @@ INSTALLED_APPS = (
 	'django.contrib.sessions',
 	'django.contrib.sites',
 	'ad',
+    'gmapi',
 	'tagging',
 	'django.contrib.admin',
 	
@@ -55,7 +56,7 @@ TEST_RUNNER = 'djangotoolbox.test.CapturingTestSuiteRunner'
 ADMIN_MEDIA_PREFIX = '/media/admin/'
 MEDIA_ROOT = os.path.join(os.path.dirname(__file__), 'media')
 TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), 'templates'),)
-FIXTURE_DIRS = (os.path.join(os.path.dirname(__file__), 'ad/fixtures'),)
+FIXTURE_DIRS = (os.path.join(os.path.dirname(__file__), 'heart/fixtures'),)
 
 ROOT_URLCONF = 'urls'
 
