@@ -159,6 +159,13 @@
 		{% block content %}
      {{ form.map }}
     {{ form.media.js }}
+<script type="text/javascript">
+    window.myobj = {
+        markerOver: function() { this.openInfoWindow(); },
+        markerOut: function() { this.closeInfoWindow(); }
+    };
+</script>
+
 <div class="tag-cloud">{% load tagging_tags %}{% tag_cloud_for_model ad.Ad as tags with steps=6 distribution=log %}
 {% for tag in tags %}
 <span class="tag-{{tag.font_size|add:"2"}}"><a href="/tag/{{tag.name}}/">{{tag.name}}</a></span> 
