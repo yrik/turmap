@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<concepts>
+{% load mptt_tags %}
+{% for node,structure in concepts|tree_info %}
+
+<concept>
+	<id>{{ node }}</id>
+	
+	<literals>
+		{%for item in node.literal_set.all %}
+			<literal>{{item}}</literal> 
+		{% endfor %}
+	</literals>	
+	
+	{% if node.wiseconcept %}
+		   <category>{{node.wiseconcept}}</category>
+	{% else %}
+		   <category>{{node.parent}}</category>
+	{% endif %}
+		<wiki_url>{{node.wiki_url}}</wiki_url>
+	<relations>
+	{%for item in node.relation_set.all %}
+		{% if item.second %}
+		<relation predicate="{{item.type}}" object="{{item.second}}"/>
+		{% endif %}
+		{% if item.third %}
+		<relation predicate="{{item.type}}" object="{{item.third}}"/>
+		{% endif %}
+	{% endfor %}
+	</relations>
+		
+{% endfor %}
+</concepts>

@@ -1,0 +1,63 @@
+{% extends "main.html" %}
+
+
+{% block title %}{{tag}}{% endblock %}
+{% block content %}
+
+<h4>Результаты по запросу: <span class="highlight">{{tag}}</span>.</h4>
+
+<div class="pagination">
+    <span class="step-links">
+        {% if items.has_previous %}
+            <a href="/tag/{{tag}}/{{ items.previous_page_number }}/">предидущая страница</a>
+        {% endif %}
+
+        <span class="current">
+            Страница {{ items.number }} из {{ items.paginator.num_pages }}.
+        </span>
+
+        {% if items.has_next %}
+            <a href="/tag/{{tag}}/{{ items.next_page_number }}/">следующая страница</a>
+        {% endif %}
+    </span>
+</div>
+
+<div class="items">
+{% for item in items.object_list %}
+<div class="ad_item">
+    
+	<p>{{ item.content }}</p>
+	<p class="ad_date">{{ item.date|date:"d/m/y"|lower }}</p>
+    <p class="ad_contacts">
+	{% if item.name %}
+    	{{ item.name }},
+	{% endif %}
+	
+	 {{ item.phone }}
+	 
+	 {% if item.email %}
+	 	,
+	  <a href="mailto:{{ item.email }}">{{ item.email }}</a>
+	  {% endif %}
+	</p>
+
+</div>
+
+{% endfor %}
+</div>
+<div class="pagination">
+    <span class="step-links">
+        {% if items.has_previous %}
+			<a href="/tag/{{tag}}/{{ items.previous_page_number }}/">предидущая страница</a>
+        {% endif %}
+
+        <span class="current">
+            Страница {{ items.number }} из {{ items.paginator.num_pages }}.
+        </span>
+
+        {% if items.has_next %}
+            <a href="/tag/{{tag}}/{{ items.next_page_number }}/">следующая страница</a>
+        {% endif %}
+    </span>
+</div>
+{% endblock %}

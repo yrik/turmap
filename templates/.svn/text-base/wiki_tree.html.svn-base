@@ -1,0 +1,21 @@
+{% extends "tree.html" %}
+
+{% block relations %}
+	<ul><li rel="rel_container" id="rel_{{node.id}}">
+		<a href="#"><ins>&nbsp;</ins>Relations</a>
+		
+		{% if node.relation_set.count or node.wiseconcept %}
+		<ul>
+		{%for item in node.relation_set.all %}
+			<li id="rel{{item.id}}" rel="relation"><a href="#"><ins>&nbsp;</ins>{{item}}</a></li> 
+		{% endfor %}
+			{% if node.wiseconcept %}
+				<li id="wc_{{node}}"  rel="relation"><a href="#"><ins>&nbsp;</ins>WISE category: {{node.wiseconcept}}</a></li>
+			{% endif %}
+		</ul>
+		{% else %}
+		
+		{% endif %}		
+	</li></ul>
+
+{% endblock %}

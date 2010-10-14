@@ -1,0 +1,17 @@
+{% load mptt_tags %}
+
+{% for node,structure in concepts|tree_info %}
+
+	{% if structure.new_level %}
+		<ul><li id="{{node.name}}" rel="default">
+	{% else %}
+		</li><li id="{{node.name}}">{% endif %}
+	
+	<a class="{{ node.checked }}" href="#"><ins>&nbsp;</ins>{{ node.name }}</a>
+	
+	{% block relations %}{% endblock %}
+	
+	
+	{% for level in structure.closed_levels %}</li></ul>{% endfor %}
+
+{% endfor %}

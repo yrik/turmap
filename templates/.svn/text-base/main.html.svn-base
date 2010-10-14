@@ -1,0 +1,290 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <title>Import data from wikipedia</title>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js">
+        </script>
+        <script type="text/javascript" src="http://yrik.org.ua/jstree/jquery.tree.js">
+        </script>
+        <script type="text/javascript" src="http://yrik.org.ua/jstree/plugins/jquery.tree.checkbox.js">
+        </script>
+        <script type="text/javascript">
+            
+			wiki_tree = $.tree.reference("#wiki_tree")
+			wise_tree = $.tree.reference("#wise_tree")
+			rel_add = false
+			function wise_update(){
+				$.get('/impwiki/update_data_from_wise',function(data){data = 'True'?alert('WISE categories updated'):alert('Error on WISE categories updating')})
+				alert('Update is running. It may takes several minutes.Most then 16 000 concepts will be added to DB')
+			}
+			//Save choices to DB
+			function save_choices(){
+				arr = $.tree.plugins.checkbox.get_checked(wiki_tree)
+				checked=''
+				$.each(arr,function(i,node){
+					id = $(node).attr('id')
+					checked=checked+id+';'
+				})
+				arr = $.tree.plugins.checkbox.get_unchecked(wiki_tree)
+				unchecked=''
+				$.each(arr,function(i,node){
+					id = $(node).attr('id')
+					unchecked=unchecked+id+';'
+				})
+				var url = '/impwiki/save_state/'
+				$.post(url,{checked:checked,unchecked:unchecked})
+			}
+			
+			//Delete selected relation
+			function del_relation(){
+				var a = wiki_tree.selected_arr
+				
+				$.each(a,function(i,node){
+					var id = node.attr('id')
+					if (id.substr(0, 3) == 'rel') {
+						node.remove()
+						$.post('/impwiki/del_relation/', {
+							id: id.substr(3, id.length)
+						})
+					}
+					else 
+						if (id.substr(0, 3) == 'wc_') {
+							node.remove()
+							$.post('/impwiki/del_category/', {
+								id: id.substr(3, id.length)
+							})
+						}
+						else {
+							alert('this element is not relation')
+						}	
+				})
+				
+				
+			}
+			//Set category of selected concepts 
+			function set_category(){
+				url = '/impwiki/set_category/'
+				a = wiki_tree.selected_arr
+				
+				second = wise_tree.get_text(wise_tree.selected)
+				
+				$.each(a,function(i,node){
+					first = wiki_tree.get_text(node)
+					data = {first:first,second:second}
+					$.post(url,data)
+
+					rel = wiki_tree.children(node)[0]
+					wiki_tree.create({data:'WISE category: '+second},rel,'inside')
+					wiki_tree.deselect_branch(node)
+				})
+								
+			}
+			//add relation
+			function add_relation(arr_first,second,n){
+				url = '/impwiki/add_relation/'
+				type=$('#RelationType').val()
+				
+				$.each(arr_first,function(i,node){
+					first = wiki_tree.get_text(node)
+					
+					data = {first:first,second:second,type:type,n:n}
+					$.post(url,data)
+
+					rel = wiki_tree.children(node)[0]
+					wiki_tree.create({data:first+' '+ type+' '+second},rel,'inside')
+					wiki_tree.deselect_branch(node)
+				})
+				
+			}
+                $(document).ready(function(){
+                
+                    //displaying information about server error
+                    $.ajaxSetup({
+                        error: function(x, e){
+                            $('#error').html(x.responseText)
+                        }
+                    })
+                    
+                    //Indication Ajax querying 
+                    $(document).ajaxStart(function(){
+                        $('#spinner').css('visibility', 'visible');
+                        $('input').attr('disabled', 'disabled')
+                    }).ajaxStop(function(){
+                        $('#spinner').css('visibility', 'hidden');
+                        $('input').attr('disabled', '')
+                    });
+                    
+                    //onSubmit - send request to server with GET parameter q, onSuccess - update tree
+                    $('#q_form').submit(function(){
+                    
+                        
+                         $.get('/impwiki/wiki_tree/', {
+                         'q': $('#q').val()
+                         }, function(text, status){
+                         showWikiTree(text)
+                         })
+                         
+                        $.get('/impwiki/wise_tree/', {
+                            'q_wise': $('#q_wise').val()
+                        }, function(text, status){
+                            showWISETree(text)
+                        })
+                        return false
+                    })
+                    
+                });
+                opt = {
+    					types:{
+    						"default" : {
+    							deletable : false,
+    							movable : false,
+    							renemable : false,
+    							draggable : true
+    						},
+    						"relation" : {
+    							deletable  : true
+    						}
+    					},
+    					multitree:true,
+    					theme : "default",
+						callback: {
+							onselect: function(NODE, TREE_OBJ){
+								
+								if (rel_add.length) {
+									add_relation(rel_add, $(NODE).attr('id'), 'third')
+								}
+								rel_add = false
+							}
+						}
+    			}
+                // building tree from data
+                function showWikiTree(html){
+                    //wiki_tree = 
+					$("#wiki_tree").html(html).tree({
+				        callback : {
+        					oncreate : function (node, ref_node,type,tree_ref) {
+          					tree_ref.select_branch($(node));
+    						}
+						} ,
+    					types:{
+    						"default" : {
+    							deletable : false,
+    							movable : false,
+    							renemable : false,
+    							draggable : false
+    						},
+    						"relation" : {
+    							deletable  : true
+    						}
+    					},
+    					rules : {
+    						multitree:true,
+    						multiple : "on",
+    						deletable : false	
+    					},
+    					
+    					ui : {
+    					           theme_name : "checkbox"
+    					      },
+						plugins : {
+							checkbox : { }
+						},
+						callback:{
+							onselect:function(NODE, TREE_OBJ) {
+							$(NODE).css('background','red')
+							
+							if(rel_add.length){
+								add_relation(rel_add,$(NODE).attr('id'), 'second')
+							}
+							rel_add = false
+						},
+						ondeselect:function(NODE, TREE_OBJ) {
+							$(NODE).css('background','white')
+						}
+						
+						}
+    			})
+					wiki_tree = $.tree.reference("#wiki_tree")
+                }
+                
+                function showWISETree(html){
+                    //wise_tree = 
+					$("#wise_tree").html(html).tree(opt)
+					wise_tree = $.tree.reference("#wise_tree")
+                }
+            
+        </script>
+		
+		<link type="text/css" rel="stylesheet" href="http://yrik.org.ua/jstree/themes/default/style.css"/>
+		
+        <style type="text/css">
+            /* Ajax loading indicator*/
+            #spinner {color: red;margin: 0px auto;visibility: hidden;width: 100%;text-align: center;position:absolute;top:50%;}
+            #wise_tree {float: right;}
+            #wiki_tree {float: left;}
+			body {width: 90%}
+            input {margin: 10px;padding: 3px;font-size: 1.01em}
+
+
+			/* LOCKED */
+			.tree-default .locked li a { color:gray; }
+			/* DOTS */
+			.tree-default ul { background-position:6px 1px; background-repeat:repeat-y; background-image:url(data:image/gif;base64,R0lGODlhAgACAIAAAB4dGf///yH5BAEAAAEALAAAAAACAAIAAAICRF4AOw==); _background-image:url("http://yrik.org.ua/jstree/themes/default/dot_for_ie.gif"); *background-image:url("http://yrik.org.ua/jstree/themes/default/dot_for_ie.gif"); }
+			.tree-default li { background-position:-64px -16px; background-repeat:no-repeat; background-image:url("http://yrik.org.ua/jstree/themes/default/icons.png"); }
+			/* NO DOTS */
+			.tree-default .no_dots, .tree-default .no_dots ul { background:transparent; }
+			.tree-default .no_dots li.leaf { background-image:none; background-color:transparent; }
+			/* OPEN or CLOSED */
+			.tree-default li.open { background:url("http://yrik.org.ua/jstree/themes/default/icons.png") -32px -48px no-repeat; }
+			.tree-default li.closed, #jstree-dragged.tree-default li li.open { background:url("http://yrik.org.ua/jstree/themes/default/icons.png") -48px -32px no-repeat; }
+			#jstree-marker { background-image:url("http://yrik.org.ua/jstree/themes/default/icons.png"); }
+			/* DEFAULT, HOVER, CLICKED, LOADING STATES */
+			.tree-default li a, .tree-default li span { border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px; }
+			.tree-default li a:hover, .tree-default li a.hover, .tree-default li span { background: #e7f4f9; border:1px solid #d8f0fa; padding:0px 3px 0px 3px; }
+			.tree-default li a.clicked, .tree-default li a.clicked:hover, .tree-default li span.clicked { background: #beebff; border:1px solid #99defd; padding:0px 3px 0px 3px; }
+			/* ICONS */
+			.tree-default ins { background-image:url("http://yrik.org.ua/jstree/themes/default/icons.png"); background-position:0 0; background-repeat:no-repeat; }
+			.tree-default ul li a.loading ins { background-image:url("http://yrik.org.ua/jstree/themes/default/throbber.gif") !important; background-position:0 0 !important; } /* UL is added to make selector stronger */
+			.tree-default li a ins.forbidden { background-position:-16px -16px; }
+			.tree-default .locked li a ins { background-position:0 -48px; }
+			.tree-default li span ins { background-position:-16px 0; }
+			#jstree-dragged.tree-default ins { background:url("http://yrik.org.ua/jstree/themes/default/icons.png") -16px -32px no-repeat; }
+			#jstree-dragged.tree-default ins.forbidden { background:url("http://yrik.org.ua/jstree/themes/default/icons.png") -16px -16px no-repeat; }
+
+			/* CONTEXT MENU */
+			.tree-default-context a ins { background-image:url("http://yrik.org.ua/jstree/themes/default/icons.png"); background-repeat:no-repeat; background-position:-64px -64px; }
+			.tree-default-context a ins.create { background-position:0 -16px; }
+			.tree-default-context a ins.rename { background-position:-16px 0px; }
+			.tree-default-context a ins.remove { background-position:0 -32px; }
+        </style>
+    </head>
+
+    <body>
+        <div id="spinner">Loading ...</div>
+        <div id="error"></div>
+		
+        <h1>Search</h1>
+        <form action="." method="GET" id="q_form">
+            <label for="q">Wikipedia category: </label><br/>
+            <input type="text" name="q" id="q" value="Giant_stars"><br/>
+            <label for="q">WISE category: </label><br/>
+            <input type="text" name="q_wise" id="q_wise" value="Browse:All_Categories"><br/>
+            <input type="submit" value="Search">
+        </form>
+		
+		<input type="button" onclick='n=$("#q").val();window.location="/impwiki/generate_xml/?name="+n' value="Download XML file">
+		
+		<input type="button" onclick='set_category()' value="Set category">
+		<input type="button" onclick='del_relation()' value="Delete selected relation">
+		<input type="button" onclick='save_choices()' value="Save state">
+		<div id="wise_update"></div><input type="button" onclick="wise_update()" value="Update WISE categories">
+		<select size="{{types.count}}" id="RelationType">
+			{% for type in types %}<option value="{{type}}" onclick="rel_add=wiki_tree.selected_arr">{{type}}</option>{% endfor %}
+		</select>
+        
+		<br/>
+        <div id="wiki_tree"></div>
+        <div id="wise_tree"></div>
+    </body>
+</html>

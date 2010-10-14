@@ -1,0 +1,51 @@
+{% extends "main.html" %}
+
+
+{% block content %}
+
+<form method="post" action="/links/" class="iform" id="links_form">
+<legend>Добавить ссылку на сайт.  </legend>
+	
+    {{ formset.management_form }}
+    {% for field in formset %}
+    <div>{{ field.label_tag }} {{ field }} {{ field.errors }}</div>
+    {% endfor %}
+	<input type="submit" value="Сохранить"/>
+	
+	<p>Ссылка останется на сайте только при условии добавления нашей <b>активной</b> текстовой ссылки и/или баннера на ваш сайт.</p>
+	<label for="t">Текстовая ссылка:</label><textarea id="t"><a href="http://nectar.org.ua">Нектар. Пчеловодческие обьявления. Мед. Инвентарь. Другое.</a></textarea>
+	<label for="t">Баннер:</label><textarea id="t"><a href="http://nectar.org.ua"><img style="border:none;" src="http://nectar.org.ua/static/logo.gif" alt="Нектар. Пчеловодческие обьявления. Мед. Инвентарь. Другое." /></a></textarea>
+</form>
+	
+
+{% for item in items.object_list %}
+<div>
+    
+	<p>{{ item.description }}</p>
+	{% autoescape off %}
+	<p>{{ item.banner }}&nbsp;&nbsp;&nbsp;{{ item.text }}</p>
+	{% endautoescape %}
+
+    
+</div>
+
+<hr/>
+{% endfor %}
+<div class="pagination">
+    <span class="step-links">
+        {% if items.has_previous %}
+            <a href="/links/{{ items.previous_page_number }}">предидущая страница</a>
+        {% endif %}
+
+        <span class="current">
+            Страница {{ items.number }} из {{ items.paginator.num_pages }}.
+        </span>
+
+        {% if items.has_next %}
+            <a href="/links/{{ items.next_page_number }}">следующая страница</a>
+        {% endif %}
+    </span>
+</div>
+
+
+{% endblock %}

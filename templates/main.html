@@ -1,0 +1,250 @@
+<!DOCTYPE>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        
+        <title>{% block title %}{% endblock %} Нектар - Продать Мёд, Купить Мёд. Продать и купить мёд, пергу, маточное молочко, воск, пыльцу и другие продуты пчеловодства. Доска обьявлений для пчеловодов. </title>
+         <style type="text/css">
+            html, body {
+				height: 100%;
+			}
+
+			body{
+            	background-image:url('/static/img/bee.jpg');
+				background-repeat:no-repeat;
+				background-position:right top;
+				line-height:1.3em;
+				font-size:0.9em;
+			    margin: 0;
+			    padding:10px;
+            }
+			#top {
+			    position: absolute;
+			}
+			h1, p {
+			    margin: 0;
+			    padding: 0.3em 0;
+			}
+			#container {
+			    min-height: 100%;
+			    margin-bottom: -46px;
+			}
+			* html #container {
+			    height: 100%;
+			}
+			#footer-spacer {
+			    height: 46px;
+			}
+			#footer {
+			    border-top: 1px solid #000;
+			    height: 45px;
+				text-align:center;
+			}
+			#footer ul{
+				margin:0 auto;
+				list-style:none;
+				display:block;
+			}
+			#footer ul li{
+				margin:0 20px;
+				display:inline;
+			}
+			h1{
+				line-height:1em;
+				font-size:1.5em;
+				padding-bottom:20px;
+			}			
+			a{
+				color:CornflowerBlue;
+			}
+			a:hover{
+				color:blue;
+			}
+			.iform{
+				width:70%;
+				padding:5px;
+				font-size:0.8em;
+				margin:0 auto;
+			}
+			.iform input,textarea,select {
+                margin: 2px;
+                padding: 1px;
+                font-size: 1em;
+            }
+			.iform label {font-weight:bold;float:left;margin:2px 0;padding:1px 0;}
+			.iform div {float:left;display:inline;width:100%;}
+			.iform input {width:75%;float:right;}
+			.iform select {width:45%;float:right;}
+			.iform textarea {width:100%;font-size:1.2em;}
+
+			.table_null{
+				border-collapse:collapse;
+				border:none;
+				vertical-align:top;
+			}
+			.table_null td{
+				width:33%;
+			}
+			#links_form{
+				width:300px;
+				float:right;
+			}
+			.ad_date{
+				font-size:small;
+				line-height:10px;
+				float:right;
+			}
+			.ad_item{
+				border:none;	
+				padding:0px 5px;
+				border-bottom:groove 1px #666;
+				
+			}
+			.ad_contacts{
+			}
+			.items > :nth-child(even){
+			}
+			.items > :nth-child(odd){
+			}
+.tag-cloud {
+    text-align: center;    
+    border: 1px solid #FFFF00;
+    padding: 5px;
+    background-color: #FFFFCC;
+}
+
+.tag-1 {
+    font-size: 2px;
+    display:none;
+}
+
+.tag-2 {
+    font-size: 4px;
+    display:none;
+}
+
+.tag-3 {
+    font-size: 8px;
+    display:none;
+}
+
+.tag-4 {
+    font-size: 14px;
+    display:none;
+}
+
+.tag-5 {
+    font-size: 12px;
+}
+
+.tag-6 {
+    font-size: 16px;
+}
+
+/* For large tag cloud 6 step */
+.tag-7 {
+    font-size: 18px;
+}
+
+.tag-8 {
+    font-size: 19px;
+}
+
+        </style>
+    </head>
+    <body>
+    	<div id="top"></div>
+		<div id="container">
+		<h1><a href="/">Нектар - Продать Мёд, Купить Мёд. Продать и купить мёд, пергу,<br/> маточное молочко, воск, пыльцу. Доска обьявлений для пчеловодов. </a></h1>
+		{% block content %}
+        <table class="table_null">
+            <tr>
+                <td>
+                    {% for item in buy.object_list %}
+                 <div>
+                        <p>{{ item.content }}</p>
+                        <p class="ad_date">{{ item.date|date:"d/m/y"|lower }}</p>
+                        <p class="ad_contacts">
+                        	{% if item.name %}
+                            	{{ item.name }},
+							{% endif %}
+							
+							 {{ item.phone }}
+							 
+							 {% if item.email %},
+							  <a href="mailto:{{ item.email }}">{{ item.email }}</a>
+							  {% endif %}
+                        </p>
+
+                    </div><hr/>
+                    {% endfor %} 
+					<br/><a href="/buy/2">больше обьявлений о покупке</a>
+                </td>
+                <td>
+                    <form method="post" action="" class="iform">
+
+                        {{ formset.management_form }}
+                        {% for field in formset %}
+                        <div>{{ field.label_tag }} {{ field }} {{ field.errors }}</div>
+                        {% endfor %}
+						<input type="submit" value="Сохранить"/>
+                    </form>
+                </td>
+                <td>
+                    {% for item in sell.object_list %}
+                    <div>
+                        <p>{{ item.content }}</p>
+                        <p class="ad_date">{{ item.date|date:"d/m/y"|lower }}</p>
+                        <p class="ad_contacts">
+                        	{% if item.name %}
+                            	{{ item.name }},
+							{% endif %}
+							
+							 {{ item.phone }}
+							 
+							 {% if item.email %},
+							  <a href="mailto:{{ item.email }}">{{ item.email }}</a>
+							  {% endif %}
+                        </p>
+
+                    </div><hr/>
+                    {% endfor %}
+					
+					<br/><a href="/sell/1">больше обьявлений о продаже</a>
+                </td>
+            </tr>
+        </table>
+        {% endblock %}
+<br/>
+<div class="tag-cloud">{% load tagging_tags %}{% tag_cloud_for_model ad.Ad as tags with steps=6 distribution=log %}
+{% for tag in tags %}
+<span class="tag-{{tag.font_size|add:"2"}}"><a href="/tag/{{tag.name}}/">{{tag.name}}</a></span> 
+{% endfor %}</div>
+		<div id="footer-spacer"></div>   
+	</div>
+	<div id="footer">
+		<ul>
+	<li><a href="http://nectar.org.ua"><img style="border:none;" src="http://nectar.org.ua/static/logo.gif" alt="Нектар. Пчеловодческие обьявления. Мед. Инвентарь. Другое." /></a></li>		
+	<li>
+    &copy 2010 <a href="http://yrik.org.ua">yrik.org.ua</a> &nbsp
+	</li>
+	<li>
+	e-mail:admin(at)nectar.org.ua
+	</li>
+	<li>
+	<a href="/links">Наши друзья (каталог сайтов)</a>
+	</li>
+	</ul>
+	
+	<!-- Yandex.Metrika -->
+<script src="//mc.yandex.ru/metrika/watch.js" type="text/javascript"></script>
+<div style="display:none;"><script type="text/javascript">
+try { var yaCounter1497355 = new Ya.Metrika(1497355); } catch(e){}
+</script></div>
+<noscript><div style="position:absolute"><img src="//mc.yandex.ru/watch/1497355" alt="" /></div></noscript>
+<!-- /Yandex.Metrika -->
+	
+	</div>
+
+    </body>
+</html>
